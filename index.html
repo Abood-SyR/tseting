@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wiki-Syria | وثائق سوريا المسربة</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            font-family: 'Tajawal', 'Segoe UI', 'Courier New', monospace;
+            color: #cccccc;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #000000, #1a0000);
+            border-bottom: 3px solid #cc0000;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            letter-spacing: -2px;
+            color: #ffffff;
+        }
+
+        .header h1 span {
+            color: #cc0000;
+        }
+
+        .header p {
+            color: #888;
+            margin-top: 10px;
+        }
+
+        .bot-link {
+            display: inline-block;
+            background: #cc0000;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            margin-top: 15px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .bot-link:hover {
+            background: #ff0000;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: #111;
+            border: 1px solid #2a2a2a;
+            border-radius: 10px;
+            padding: 15px 30px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #cc0000;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: #111;
+            border: 1px solid #2a2a2a;
+            color: #ccc;
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: #cc0000;
+            border-color: #cc0000;
+            color: white;
+        }
+
+        .search-box {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .search-box input {
+            width: 100%;
+            max-width: 400px;
+            background: #111;
+            border: 1px solid #2a2a2a;
+            padding: 12px 20px;
+            color: #ccc;
+            border-radius: 30px;
+            font-size: 14px;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #cc0000;
+        }
+
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .document-card {
+            background: #111;
+            border: 1px solid #2a2a2a;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .document-card:hover {
+            transform: translateY(-5px);
+            border-color: #cc0000;
+        }
+
+        .document-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            background: #1a1a1a;
+            cursor: pointer;
+        }
+
+        .document-image-placeholder {
+            width: 100%;
+            height: 220px;
+            background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            font-size: 48px;
+        }
+
+        .document-content {
+            padding: 20px;
+        }
+
+        .document-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #cc0000;
+            margin-bottom: 10px;
+        }
+
+        .document-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 12px;
+            font-size: 0.75rem;
+            color: #666;
+            flex-wrap: wrap;
+        }
+
+        .document-province {
+            background: #1a1a1a;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        .document-description {
+            font-size: 0.85rem;
+            color: #aaa;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .document-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid #2a2a2a;
+            font-size: 0.7rem;
+            color: #555;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #2a2a2a;
+            border-top-color: #cc0000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .empty {
+            text-align: center;
+            padding: 60px;
+            color: #666;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid #2a2a2a;
+            margin-top: 40px;
+            font-size: 0.7rem;
+            color: #555;
+        }
+
+        /* Lightbox لعرض الصور بشكل أكبر */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+        }
+
+        @media (max-width: 700px) {
+            .documents-grid {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>WIKI-<span>SYRIA</span></h1>
+    <p>الوثائق المسربة • الجرائم الموثقة • العدالة المطلقة</p>
+    <a href="https://t.me/wiki_syria_bot" class="bot-link">🤖 للإبلاغ عن وثيقة جديدة - اضغط هنا</a>
+</div>
+
+<div class="container">
+    <div class="stats" id="stats">
+        <div class="stat-card">
+            <div class="stat-number" id="totalCount">0</div>
+            <div class="stat-label">إجمالي الوثائق</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="provincesCount">0</div>
+            <div class="stat-label">محافظات</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="verifiedCount">0</div>
+            <div class="stat-label">وثائق موثقة</div>
+        </div>
+    </div>
+
+    <div class="filters">
+        <button class="filter-btn active" data-province="all">الكل</button>
+    </div>
+
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍 بحث في العناوين والوصف...">
+    </div>
+
+    <div id="documentsContainer">
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>جاري تحميل الوثائق...</p>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    <p>🔐 البصمات الرقمية متاحة للتحقق من صحة الوثائق</p>
+    <p>© Wiki-Syria • لفضح الجرائم ومنع الإفلات من العقاب</p>
+</div>
+
+<!-- Lightbox لعرض الصور -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <span class="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+</div>
+
+<script>
+    // ✅ رابط API الصحيح
+    const API_URL = 'https://wiki-syria-back.vercel.app/documents';
+    
+    let allDocuments = [];
+    let currentProvince = 'all';
+    let currentSearch = '';
+
+    // جلب الوثائق من API
+    async function fetchDocuments() {
+        try {
+            const response = await fetch(API_URL);
+            const data = await response.json();
+            
+            if (data.success) {
+                allDocuments = data.documents;
+                updateFilters();
+                renderDocuments();
+                updateStats();
+            } else {
+                showError(data.error || 'خطأ في تحميل الوثائق');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showError('تعذر الاتصال بالخادم. يرجى المحاولة لاحقاً.');
+        }
+    }
+
+    // تحديث قائمة المحافظات في الفلتر
+    function updateFilters() {
+        const provinces = [...new Set(allDocuments.map(doc => doc.province).filter(p => p && p !== 'string'))];
+        
+        const filtersContainer = document.querySelector('.filters');
+        const oldButtons = filtersContainer.querySelectorAll('.filter-btn:not(.active)');
+        oldButtons.forEach(btn => btn.remove());
+        
+        provinces.forEach(province => {
+            const btn = document.createElement('button');
+            btn.className = 'filter-btn';
+            btn.textContent = province;
+            btn.dataset.province = province;
+            btn.onclick = () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentProvince = province;
+                renderDocuments();
+            };
+            filtersContainer.appendChild(btn);
+        });
+    }
+
+    // تصفية الوثائق
+    function getFilteredDocuments() {
+        return allDocuments.filter(doc => {
+            // فلتر المحافظة
+            if (currentProvince !== 'all' && doc.province !== currentProvince) {
+                return false;
+            }
+            // فلتر البحث
+            if (currentSearch) {
+                const searchLower = currentSearch.toLowerCase();
+                return doc.title.toLowerCase().includes(searchLower) ||
+                       doc.description.toLowerCase().includes(searchLower) ||
+                       doc.province.toLowerCase().includes(searchLower);
+            }
+            return true;
+        });
+    }
+
+    // عرض الصورة في Lightbox
+    function showLightbox(imageUrl) {
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        lightboxImg.src = imageUrl;
+        lightbox.classList.add('active');
+    }
+
+    // إغلاق Lightbox
+    function closeLightbox() {
+        document.getElementById('lightbox').classList.remove('active');
+    }
+
+    // عرض الوثائق
+    function renderDocuments() {
+        const filtered = getFilteredDocuments();
+        const container = document.getElementById('documentsContainer');
+        
+        if (filtered.length === 0) {
+            container.innerHTML = `
+                <div class="empty">
+                    <p>📭 لا توجد وثائق مطابقة للبحث</p>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = `
+            <div class="documents-grid">
+                ${filtered.map(doc => `
+                    <div class="document-card">
+                        ${doc.image_url ? 
+                            `<img class="document-image" 
+                                 src="${doc.image_url}" 
+                                 alt="${escapeHtml(doc.title)}"
+                                 loading="lazy"
+                                 onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%25%22%20height%3D%22220%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22220%22%20fill%3D%22%23111111%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20text-anchor%3D%22middle%22%20fill%3D%22%23666%22%3E📷%20لا%20توجد%20صورة%3C%2Ftext%3E%3C%2Fsvg%3E'; this.style.objectFit='contain';"
+                                 onclick="showLightbox('${doc.image_url}')">` 
+                            : `<div class="document-image-placeholder">📄</div>`
+                        }
+                        <div class="document-content">
+                            <div class="document-title">${escapeHtml(doc.title)}</div>
+                            <div class="document-meta">
+                                <span class="document-province">📍 ${escapeHtml(doc.province)}</span>
+                                <span>📅 ${doc.date || 'غير محدد'}</span>
+                                ${doc.verified ? '<span>✅ موثقة</span>' : ''}
+                            </div>
+                            <div class="document-description">
+                                ${escapeHtml(doc.description.length > 150 ? doc.description.substring(0, 150) + '...' : doc.description)}
+                            </div>
+                            <div class="document-footer">
+                                <span>👁️ ${doc.views || 0} مشاهدة</span>
+                                <span>⬇️ ${doc.downloads || 0} تحميل</span>
+                                <span>🔗 <a href="${doc.image_url}" target="_blank" style="color:#cc0000;">رابط مباشر</a></span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    // تحديث الإحصائيات
+    function updateStats() {
+        const total = allDocuments.length;
+        const provinces = new Set(allDocuments.map(doc => doc.province).filter(p => p && p !== 'string'));
+        const verified = allDocuments.filter(doc => doc.verified).length;
+        
+        document.getElementById('totalCount').textContent = total;
+        document.getElementById('provincesCount').textContent = provinces.size;
+        document.getElementById('verifiedCount').textContent = verified;
+    }
+
+    // عرض رسالة خطأ
+    function showError(message) {
+        const container = document.getElementById('documentsContainer');
+        container.innerHTML = `
+            <div class="empty">
+                <p>⚠️ ${escapeHtml(message)}</p>
+            </div>
+        `;
+    }
+
+    // منع XSS
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // البحث المباشر
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        currentSearch = e.target.value;
+        renderDocuments();
+    });
+
+    // زر الكل
+    document.querySelector('.filter-btn[data-province="all"]').onclick = () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector('.filter-btn[data-province="all"]').classList.add('active');
+        currentProvince = 'all';
+        renderDocuments();
+    };
+
+    // إغلاق Lightbox بالضغط على ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeLightbox();
+        }
+    });
+
+    // تحميل الوثائق
+    fetchDocuments();
+    
+    // تحديث تلقائي كل 60 ثانية
+    setInterval(fetchDocuments, 60000);
+</script>
+</body>
+</html>
